@@ -7,6 +7,7 @@ import json
 
 wifi_cfg = 'wifi.cfg'
 
+
 def getUniqName(name):
     '''
     Generate the unique device name
@@ -16,6 +17,8 @@ def getUniqName(name):
     return devName
 
 ####### BLE Manger ###########
+
+
 class BLE():
     def __init__(self, name, myCallback=None):
         self.name = name
@@ -54,16 +57,16 @@ class BLE():
             '''New message received'''
             buffer = self.ble.gatts_read(self.rx)
             message = buffer.decode('UTF-8').strip()
-            if  saveWiFiConfig(message):
+            if message == 'reboot':
+                reset()
+            elif self.myCallback:       # if myCallback is a valid function
+                if not self.myCallback(message):
+                    self.send('"' + message + '" not understood')
+            elif saveWiFiConfig(message):
                 # successful exit with cfg saved
                 self.send('wifi config saved')
-            elif message == 'reboot':
-                reset()
-            elif self.myCallback:
-                if not self.myCallback(message):
-                    self.send('"'+ message +'" not understood')
             else:
-                self.send('"'+ message +'" not understood')
+                self.send('"' + message + '" not understood')
 
     def register(self):
         # Nordic UART Service (NUS)
@@ -79,7 +82,6 @@ class BLE():
         BLE_UART = (BLE_NUS, (BLE_TX, BLE_RX,))
         SERVICES = (BLE_UART, )
         ((self.tx, self.rx,), ) = self.ble.gatts_register_services(SERVICES)
-        
 
     def send(self, data):
         try:
@@ -92,9 +94,13 @@ class BLE():
         self.ble.gap_advertise(100, bytearray(
             '\x02\x01\x02') + bytearray((len(name) + 1, 0x09)) + name)
 
+    def setCallback(self, callback):
+        self.myCallback = callback
+
 
 ##### WiFi Manager ##########
 wifi_conn = False
+
 
 def connectWiFi(uniqName):
     '''
@@ -146,7 +152,7 @@ def connectWiFi(uniqName):
                 print('other exception')
     except:
         print('ssid not defined')
-        
+
     return False
 
 
@@ -174,7 +180,7 @@ def saveWiFiConfig(message):
     except OSError:
         print('error in wifi cfg file wriging')
         return False
-    
+
     return True
 
 
@@ -184,15 +190,16 @@ def startBLE(name, myBLECallback=None):
     '''
     This starts the BLE service with the given name and the callback if specified.
         startBLE(devName, myBLEcallback)
-        
+
         devName will be the BLE device name once started
         myBLECallback is the optional callback function you define and pass.
         This callback should return True, if the callback processed as desired,
         or return False/do nothing if the given message is not processed by
         this callback, so the remaining built-in callback should continue if any
     '''
-    ble=BLE(getUniqName(name), myBLECallback)
+    ble = BLE(getUniqName(name), myBLECallback)
     return ble
+
 
 def startWiFi(name):
     '''
@@ -200,7 +207,3 @@ def startWiFi(name):
     "name.local" is the mDNS name for the device, when you connect to it.
     '''
     return connectWiFi(getUniqName(name))
-
-
-
-
