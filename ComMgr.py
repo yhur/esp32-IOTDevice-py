@@ -59,12 +59,13 @@ class BLE():
             message = buffer.decode('UTF-8').strip()
             if message == 'reboot':
                 reset()
+            elif saveWiFiConfig(message):
+                # successful exit with cfg saved. if no ssid/pw,
+                # then the next elif will be evaluated
+                self.send('wifi config saved')
             elif self.myCallback:       # if myCallback is a valid function
                 if not self.myCallback(message):
                     self.send('"' + message + '" not understood')
-            elif saveWiFiConfig(message):
-                # successful exit with cfg saved
-                self.send('wifi config saved')
             else:
                 self.send('"' + message + '" not understood')
 
@@ -190,7 +191,6 @@ def startBLE(name, myBLECallback=None):
     '''
     This starts the BLE service with the given name and the callback if specified.
         startBLE(devName, myBLEcallback)
-
         devName will be the BLE device name once started
         myBLECallback is the optional callback function you define and pass.
         This callback should return True, if the callback processed as desired,
