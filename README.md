@@ -20,7 +20,7 @@ This creates the IOTDevice. It can be called with either a configuration option 
 ```
 2. With configuration dict object.
 ```python
-    from IOTDevice import Device, ConfiguredDevice
+    from IOTDevice import Device
     
     option = {
         devId : 'mydevice',
@@ -34,7 +34,7 @@ This creates the IOTDevice. It can be called with either a configuration option 
 ```
 This can be especially usefull when the configuration is stored in a file
 ```python
-    from IOTDevice import Device, ConfiguredDevice
+    from IOTDevice import Device
     
     f = open('device.cfg', 'w')
     option = json.loads(f.read())
