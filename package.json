@@ -1,7 +1,7 @@
 {
     "urls": [
-      ["ComMgr.py", "github:yhur/esp32-IOTDevice-py/blob/main/ComMgr.py"],
-      ["IOTDevice.py", "github:yhur/esp32-IOTDevice-py/blob/main/IOTDevice.py"]
+      ["ComMgr.py", "github:yhur/esp32-IOTDevice-py/ComMgr.py"],
+      ["IOTDevice.py", "github:yhur/esp32-IOTDevice-py/IOTDevice.py"]
     ],
     "deps": [
       []
