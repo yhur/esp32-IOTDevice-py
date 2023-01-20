@@ -92,7 +92,10 @@ class Device():
             self.resetCallback = callback
         
     def loop(self):
-        self.client.check_msg()
+        try:
+            self.client.check_msg()
+        except:
+            pass
 
 ############### ConfiguredDeice ##############
 device_cfg = 'device.cfg'
